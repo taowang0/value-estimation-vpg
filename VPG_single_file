@@ -26,7 +26,7 @@ class Args:
 
 
     # Algorithm specific arguments
-    env_id: str = "Walker2d-v5"
+    env_id: str = "Hopper-v5"
     """the id of the environment"""
     total_timesteps: int = 5000000
     """total timesteps of the experiments"""
@@ -53,8 +53,6 @@ class Args:
     # to be filled in runtime
     batch_size: int = 0
     """the batch size (computed in runtime)"""
-    minibatch_size: int = 0
-    """the mini-batch size (computed in runtime)"""
     num_iterations: int = 0
     """the number of iterations (computed in runtime)"""
 
@@ -206,8 +204,6 @@ if __name__ == "__main__":
 
         # Optimizing the policy and value network
         _, newlogprob, entropy, newvalue = agent.get_action_and_value(b_obs, b_actions)
-
-        mb_advantages = b_advantages
         # Value loss
         for i in range(args.num_value_step):
             newvalue = agent.get_value(b_obs)
@@ -218,7 +214,7 @@ if __name__ == "__main__":
             critic_optimizer.step()
 
         # Policy loss
-        pg_loss = (-mb_advantages * newlogprob).mean()
+        pg_loss = (-b_advantages * newlogprob).mean()
         entropy_loss = entropy.mean()
         loss = pg_loss - args.ent_coef * entropy_loss
         actor_optimizer.zero_grad()
