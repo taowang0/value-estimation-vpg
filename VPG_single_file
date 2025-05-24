@@ -132,7 +132,9 @@ if __name__ == "__main__":
     envs2 = gym.make_vec(args.env_id, num_envs=1, vectorization_mode="async")
     assert isinstance(envs.single_action_space, gym.spaces.Box), "only continuous action space is supported"
 
+  #  envs = gym.wrappers.FlattenObservation(envs)  # deal with dm_control's Dict observation space
     envs = gym.wrappers.vector.RecordEpisodeStatistics(envs)
+
   #  envs = gym.wrappers.vector.ClipAction(envs)
 #    envs = gym.wrappers.vector.NormalizeReward(envs, gamma=args.gamma)
     envs = gym.wrappers.vector.NormalizeObservation(envs)
