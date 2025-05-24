@@ -57,21 +57,6 @@ class Args:
     """the number of iterations (computed in runtime)"""
 
 
-def make_env(env_id, idx, capture_video, run_name, gamma):
-    def thunk():
-        env = gym.make(env_id)
-   #     env = gym.wrappers.FlattenObservation(env)  # deal with dm_control's Dict observation space
-        env = gym.wrappers.RecordEpisodeStatistics(env)
-    #    env = gym.wrappers.ClipAction(env)
-        env = gym.wrappers.NormalizeObservation(env)
-    #    env = gym.wrappers.TransformObservation(env, lambda obs: np.clip(obs, -10, 10))
-        env = gym.wrappers.NormalizeReward(env, gamma=gamma)
-     #   env = gym.wrappers.TransformReward(env, lambda reward: np.clip(reward, -10, 10))
-        return env
-
-    return thunk
-
-
 def layer_init(layer, std=np.sqrt(2), bias_const=0.0):
     torch.nn.init.orthogonal_(layer.weight, std)
     torch.nn.init.constant_(layer.bias, bias_const)
@@ -136,9 +121,9 @@ if __name__ == "__main__":
     envs = gym.wrappers.vector.RecordEpisodeStatistics(envs)
 
   #  envs = gym.wrappers.vector.ClipAction(envs)
-#    envs = gym.wrappers.vector.NormalizeReward(envs, gamma=args.gamma)
+  #  envs = gym.wrappers.vector.NormalizeReward(envs, gamma=args.gamma)
     envs = gym.wrappers.vector.NormalizeObservation(envs)
-#   envs2 = gym.wrappers.vector.ClipAction(envs2)
+  #  envs2 = gym.wrappers.vector.ClipAction(envs2)
     envs2 = gym.wrappers.vector.NormalizeObservation(envs2)
 
     agent = Agent(envs).to(device)
@@ -224,6 +209,7 @@ if __name__ == "__main__":
         nn.utils.clip_grad_norm_(agent.parameters(), args.max_grad_norm)
         actor_optimizer.step()
 
+        # Evaluate policy every 10000 env steps
         if (((global_step + args.batch_size) // 10000) - ((global_step) // 10000)) > 0:
             envs2.obs_rms = envs.obs_rms
             obser, info = envs2.reset(seed=args.seed)
