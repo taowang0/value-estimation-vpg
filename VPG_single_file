@@ -43,7 +43,7 @@ class Args:
     gae_lambda: float = 0.95
     """the lambda for the general advantage estimation"""
     num_value_step: int = 20
-    """the lnumber of value steps per iteration"""
+    """the number of value steps per iteration"""
     ent_coef: float = 0.0
     """coefficient of the entropy"""
     max_grad_norm: float = 1.0
