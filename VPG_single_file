@@ -1,4 +1,4 @@
-# This implementation is adopted and modified from https://docs.cleanrl.dev/rl-algorithms/ppo/#ppo_continuous_actionpy
+# This implementation is adapted and modified from https://docs.cleanrl.dev/rl-algorithms/ppo/#ppo_continuous_actionpy
 import os
 import random
 import time
@@ -26,7 +26,7 @@ class Args:
 
 
     # Algorithm specific arguments
-    env_id: str = "Hopper-v5"
+    env_id: str = "Walker2d-v5"
     """the id of the environment"""
     total_timesteps: int = 5000000
     """total timesteps of the experiments"""
@@ -42,8 +42,8 @@ class Args:
     """the discount factor gamma"""
     gae_lambda: float = 0.95
     """the lambda for the general advantage estimation"""
-    num_value_step: int = 20
-    """the number of value steps per iteration"""
+    num_value_step: int = 50
+    """the lnumber of value steps per iteration"""
     ent_coef: float = 0.0
     """coefficient of the entropy"""
     max_grad_norm: float = 1.0
@@ -55,6 +55,21 @@ class Args:
     """the batch size (computed in runtime)"""
     num_iterations: int = 0
     """the number of iterations (computed in runtime)"""
+
+
+def make_env(env_id, idx, capture_video, run_name, gamma):
+    def thunk():
+        env = gym.make(env_id)
+   #     env = gym.wrappers.FlattenObservation(env)  # deal with dm_control's Dict observation space
+        env = gym.wrappers.RecordEpisodeStatistics(env)
+    #    env = gym.wrappers.ClipAction(env)
+        env = gym.wrappers.NormalizeObservation(env)
+    #    env = gym.wrappers.TransformObservation(env, lambda obs: np.clip(obs, -10, 10))
+        env = gym.wrappers.NormalizeReward(env, gamma=gamma)
+     #   env = gym.wrappers.TransformReward(env, lambda reward: np.clip(reward, -10, 10))
+        return env
+
+    return thunk
 
 
 def layer_init(layer, std=np.sqrt(2), bias_const=0.0):
@@ -121,9 +136,9 @@ if __name__ == "__main__":
     envs = gym.wrappers.vector.RecordEpisodeStatistics(envs)
 
   #  envs = gym.wrappers.vector.ClipAction(envs)
-  #  envs = gym.wrappers.vector.NormalizeReward(envs, gamma=args.gamma)
+#    envs = gym.wrappers.vector.NormalizeReward(envs, gamma=args.gamma)
     envs = gym.wrappers.vector.NormalizeObservation(envs)
-  #  envs2 = gym.wrappers.vector.ClipAction(envs2)
+#   envs2 = gym.wrappers.vector.ClipAction(envs2)
     envs2 = gym.wrappers.vector.NormalizeObservation(envs2)
 
     agent = Agent(envs).to(device)
@@ -209,7 +224,7 @@ if __name__ == "__main__":
         nn.utils.clip_grad_norm_(agent.parameters(), args.max_grad_norm)
         actor_optimizer.step()
 
-        # Evaluate policy every 10000 env steps
+        # evaluate policy every 10000 steps
         if (((global_step + args.batch_size) // 10000) - ((global_step) // 10000)) > 0:
             envs2.obs_rms = envs.obs_rms
             obser, info = envs2.reset(seed=args.seed)
