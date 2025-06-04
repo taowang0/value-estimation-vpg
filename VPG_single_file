@@ -32,7 +32,7 @@ class Args:
     """total timesteps of the experiments"""
     actor_learning_rate: float = 7e-4
     """the learning rate of the optimizer for the actor"""
-    critic_learning_rate: float = 7e-4
+    critic_learning_rate: float = 3e-4
     """the learning rate of the optimizer for the critic"""
     num_envs: int = 64
     """the number of parallel game environments"""
