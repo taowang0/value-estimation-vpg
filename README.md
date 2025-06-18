@@ -6,10 +6,11 @@ The empirical results presented in the paper were obtained using `examples/mujoc
 
 If you find our work helpful for your research, please cite:
 ```
-@article{wang2025improving,
-    title={Improving Value Estimation Critically Enhances Vanilla Policy Gradient},
-    author={Tao Wang and Ruipeng Zhang and Sicun Gao},
-    year={2025},
-    journal={arXiv preprint arxiv:2505.19247}
+@inproceedings{
+wang2025improving,
+title={Improving Value Estimation Critically Enhances Vanilla Policy Gradient},
+author={Tao Wang and Ruipeng Zhang and Sicun Gao},
+booktitle={Forty-second International Conference on Machine Learning},
+year={2025}
 }
 ```
